@@ -6,6 +6,12 @@ import nodemailer from 'nodemailer';
 
 export const createContact = async (req, res) => {
   const { subject, name, email, phone, message } = req.body;
+
+  const emailExist = await Contact.findOne({ email });
+  console.log(email);
+  if (emailExist) {
+    throw new BadRequestError('Email Already exist');
+  }
   if (!name || !email || !phone || !message) {
     throw new BadRequestError('Please provide all details');
   }
@@ -35,7 +41,7 @@ export const createContact = async (req, res) => {
   let info = await transporter.sendMail({
     from: `"${name}" <${email}>`,
     to: `help.weldcentral@gmail.com`,
-    subject: `${subject}`,
+    subject: `${subject} from ${name}`,
     html: `<p><strong>${subject}</strong></p>
 <p>${message}</p>
 
@@ -45,10 +51,10 @@ export const createContact = async (req, res) => {
   let info2 = await transporter.sendMail({
     from: `"Weld Central " <help.weldcentral@gmail.com>`,
     to: `${email}`,
-    subject: `Thank You ${name} for Contacting us`,
-    html: ` <p><strong>Thank You for Your Submission!</strong></p>
+    subject: `Message from Weld Central Support Team`,
+    html: ` <p><strong>Thank you for Your Submission!</strong></p>
 <p>We&rsquo;ve successfully received your form and appreciate you taking the time to provide us with your information. Our team will review your submission and get back to you as soon as possible.</p>
-<p>If you have any urgent questions or need further assistance, please don&rsquo;t hesitate to reach out to us at [contact information].</p>
+<p>If you have any urgent questions or need further assistance, please don&rsquo;t hesitate to reach out to us at help.weldcentral@gmail.</p>
 <p>Thank you for choosing Weld Central. We look forward to connecting with you soon!</p>
 <p>Best regards,<br />The Weld Central Team</p>  `,
   });
