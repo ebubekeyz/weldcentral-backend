@@ -14,7 +14,7 @@ export const createContact = async (req, res) => {
     throw new BadRequestError('Fields Should not be empty');
   }
 
-  const contact = await Cooking.create({
+  const contact = await Contact.create({
     subject,
     name,
     email,
