@@ -79,6 +79,7 @@ export const getAllUsers = async (req, res) => {
     companyName,
     address,
     user,
+    sort,
   } = req.query;
 
   let result = User.find({});

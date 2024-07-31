@@ -60,7 +60,7 @@ export const createContact = async (req, res) => {
 };
 
 export const getContact = async (req, res) => {
-  let { date, status, subject, name, email, phone, message } = req.query;
+  let { date, status, subject, name, email, phone, message, sort } = req.query;
 
   let result = Contact.find({});
 
