@@ -7,8 +7,8 @@ import nodemailer from 'nodemailer';
 export const createContact = async (req, res) => {
   const { subject, name, email, phone, message } = req.body;
 
-  const emailExist = await Contact.findOne({ email });
-  console.log(email);
+  // const emailExist = await Contact.findOne({ email });
+  // console.log(email);
   if (emailExist) {
     throw new BadRequestError('Email Already exist');
   }
