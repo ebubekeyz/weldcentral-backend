@@ -59,7 +59,9 @@ export const createContact = async (req, res) => {
 <p>Best regards,<br />The Weld Central Team</p>  `,
   });
 
-  res.status(StatusCodes.CREATED).json({ attributes: contact });
+  res
+    .status(StatusCodes.CREATED)
+    .json({ msg: 'Thank you for Your Submission!' });
 };
 
 export const getContact = async (req, res) => {
