@@ -80,6 +80,7 @@ export const getAllUsers = async (req, res) => {
     address,
     user,
     sort,
+    date,
   } = req.query;
 
   let result = User.find({});
