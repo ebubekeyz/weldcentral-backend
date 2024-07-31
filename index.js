@@ -34,7 +34,7 @@ import helmet from 'helmet';
 let originUrl =
   process.env.NODE_ENV !== 'production'
     ? 'http://localhost:5173'
-    : 'https://optilogix.netlify.app';
+    : 'https://weldcentral.netlify.app';
 
 app.use(
   cors({
