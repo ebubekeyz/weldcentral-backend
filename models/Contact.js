@@ -37,11 +37,6 @@ const ContactSchema = new mongoose.Schema(
       type: String,
       default: moment().format('YYYY-DD-MM'),
     },
-    user: {
-      type: mongoose.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
   },
   { timestamps: true }
 );

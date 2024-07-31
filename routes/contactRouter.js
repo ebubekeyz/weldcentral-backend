@@ -9,7 +9,6 @@ import {
   getSingleContact,
   deleteSingleContact,
   deleteAllContact,
-  getAllContact,
   deleteUserContact,
   editSingleContact,
   getContact,
@@ -18,8 +17,7 @@ import {
 
 router
   .route('/')
-  .get(auth, getAllContact)
-  .post(auth, createContact)
+  .post(createContact)
   .delete(auth, authPermission('admin', 'owner'), deleteAllContact);
 
 router.route('/allContact').get(getContact);

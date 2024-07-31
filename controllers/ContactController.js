@@ -2,97 +2,70 @@ import Contact from '../models/Contact.js';
 import { StatusCodes } from 'http-status-codes';
 import BadRequestError from '../errors/badRequest.js';
 import UnauthorizedError from '../errors/unauthorized.js';
+import nodemailer from 'nodemailer';
 
 export const createContact = async (req, res) => {
-  req.body.user = req.user.userId;
-  const contact = await Cooking.create(req.body);
+  const { subject, name, email, phone, message } = req.body;
+  if (!name || !email || !phone || !message) {
+    throw new BadRequestError('Please provide all details');
+  }
+
+  if (name == '' || email == '' || phone == '' || message == '') {
+    throw new BadRequestError('Fields Should not be empty');
+  }
+
+  const contact = await Cooking.create({
+    subject,
+    name,
+    email,
+    phone,
+    message,
+  });
+  let testAccount = await nodemailer.createTestAccount();
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.GMAIL_HOST,
+    port: process.env.GMAIL_PORT,
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS,
+    },
+  });
+
+  let info = await transporter.sendMail({
+    from: `"${name}" <${email}>`,
+    to: `help.weldcentral@gmail.com`,
+    subject: `${subject}`,
+    html: `<p><strong>${subject}</strong></p>
+<p>${message}</p>
+
+<p>From<br />${name}</p> <p>Phone:<br />${phone}</p>  `,
+  });
+
+  let info2 = await transporter.sendMail({
+    from: `"Weld Central " <help.weldcentral@gmail.com>`,
+    to: `${email}`,
+    subject: `Thank You ${name} for Contacting us`,
+    html: ` <p><strong>Thank You for Your Submission!</strong></p>
+<p>We&rsquo;ve successfully received your form and appreciate you taking the time to provide us with your information. Our team will review your submission and get back to you as soon as possible.</p>
+<p>If you have any urgent questions or need further assistance, please don&rsquo;t hesitate to reach out to us at [contact information].</p>
+<p>Thank you for choosing Weld Central. We look forward to connecting with you soon!</p>
+<p>Best regards,<br />The Weld Central Team</p>  `,
+  });
+
   res.status(StatusCodes.CREATED).json({ attributes: contact });
 };
 
-export const getAllContact = async (req, res) => {
-  let { user, date, status, email, subject, name } = req.query;
-
-  const queryObject = {
-    user: req.user.userId,
-  };
-
-  let result = Contact.find(queryObject);
-
-  if (user) {
-    result = Contact.find(queryObject, { user: { $eq: user } });
-  }
-
-  if (status) {
-    result = Contact.find(queryObject, {
-      status: { $eq: status },
-    });
-  }
-  if (name) {
-    result = Contact.find(queryObject, {
-      name: { $eq: name },
-    });
-  }
-  if (email) {
-    result = Contact.find(queryObject, {
-      email: { $eq: email },
-    });
-  }
-  if (subject) {
-    result = Contact.find(queryObject, {
-      subject: { $eq: subject },
-    });
-  }
-
-  if (sort === 'latest') {
-    result = result.sort('-createdAt');
-  }
-  if (sort === 'oldest') {
-    result = result.sort('createdAt');
-  }
-
-  if (sort === 'a-z') {
-    result = result.sort('cargoName');
-  }
-  if (sort === 'z-a') {
-    result = result.sort('-cargoName');
-  }
-
-  if (date) {
-    result = Contact.find(queryObject, {
-      date: { $regex: date, $options: 'i' },
-    });
-  }
-
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
-
-  result = result.skip(skip).limit(limit);
-
-  const contact = await result;
-
-  const totalContact = await Contact.countDocuments();
-  const numOfPage = Math.ceil(totalContact / limit);
-
-  res.status(StatusCodes.OK).json({
-    contact: contact,
-    meta: {
-      pagination: {
-        page: page,
-        total: totalContact,
-        pageCount: numOfPage,
-      },
-    },
-  });
-};
-
 export const getContact = async (req, res) => {
-  let { user, date, status, subject, name, email } = req.query;
+  let { date, status, subject, name, email, phone, message } = req.query;
 
   let result = Contact.find({});
 
-  if (user) {
-    result = Contact.find({ user: { $eq: user } });
+  if (phone) {
+    result = Contact.find({ phone: { $eq: phone } });
+  }
+  if (message) {
+    result = Contact.find({ message: { $eq: message } });
   }
 
   if (status) {
