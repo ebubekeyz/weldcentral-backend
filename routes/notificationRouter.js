@@ -17,7 +17,7 @@ import {
 
 router
   .route('/')
-  .post(auth, createNotification)
+  .post(createNotification)
   .delete(auth, authPermission('admin', 'owner'), deleteAllNotifications);
 
 router.route('/allNotification').get(getNotifications);

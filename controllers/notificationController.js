@@ -4,6 +4,11 @@ import BadRequestError from '../errors/badRequest.js';
 import UnauthorizedError from '../errors/unauthorized.js';
 
 export const createNotification = async (req, res) => {
+  const { email } = req.body;
+  const exist = await Notification.findOne({ email });
+  if (exist) {
+    throw new BadRequestError('Email already exist');
+  }
   const notification = await Notification.create(req.body);
   res.status(StatusCodes.CREATED).json({ attributes: notification });
 };
